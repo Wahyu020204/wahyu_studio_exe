@@ -1,0 +1,19 @@
+{
+  "name": "wahyu-studio",
+  "version": "1.0.0",
+  "description": "Wahyu Studio Offline - Proposal, Invoice dan OCR",
+  "main": "main.js",
+  "author": "Wahyu Mebel Design",
+  "license": "UNLICENSED",
+  "scripts": {"start": "electron .", "dist:portable": "electron-builder --win portable"},
+  "devDependencies": {"electron": "^37.2.6", "electron-builder": "^26.0.12"},
+  "build": {
+    "appId": "id.wahyumebeldesign.studio",
+    "productName": "Wahyu Studio",
+    "asar": true,
+    "files": ["main.js", "app.html", "assets/**/*", "package.json"],
+    "directories": {"output": "dist"},
+    "win": {"target": [{"target": "portable", "arch": ["x64"]}]},
+    "portable": {"artifactName": "Wahyu-Studio-Portable-${version}.exe"}
+  }
+}

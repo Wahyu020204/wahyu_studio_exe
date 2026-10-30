@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#1f3448">
+<title>Invoice Offline</title>
+<style>
+:root{--ink:#1f3448;--muted:#667482;--line:#d8e0e7;--pale:#edf2f6;--peach:#f6d6b9;--bg:#f3f6f8}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);font:15px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;color:#25313b;padding-bottom:96px}
+header{background:var(--ink);color:#fff;padding:calc(env(safe-area-inset-top,0px) + 16px) 16px 14px}
+header .row{max-width:760px;margin:auto;display:flex;align-items:center;justify-content:space-between;gap:10px}
+header h1{margin:0;font-size:20px}header small{opacity:.75;display:block;font-size:12px}
+.hbtns{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+.hbtns button{background:#ffffff1f;color:#fff;border:0;border-radius:8px;padding:7px 10px;font-size:12px;font-weight:600}
+main{max-width:760px;margin:auto;padding:14px 12px}
+.card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:14px}
+h2{margin:0 0 12px;font-size:16px;color:var(--ink)}
+label{display:block;font-weight:650;font-size:12.5px;margin:0 0 5px;color:#354451}
+input,textarea{font:inherit;width:100%;border:1px solid #c9d3dc;border-radius:9px;padding:10px;background:#fff;color:#25313b;outline:none}
+input:focus,textarea:focus{border-color:#526f88;box-shadow:0 0 0 3px #526f8820}
+textarea{min-height:64px;resize:vertical}
+.field{margin-bottom:11px}.field:last-child{margin-bottom:0}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.g3{display:grid;grid-template-columns:.8fr .8fr 1.4fr;gap:8px}
+.item{border:1px solid var(--line);border-radius:12px;padding:12px;margin-bottom:12px;background:#fafcfd}
+.ihead{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.ihead b{color:var(--ink)}.ihead .sub{margin-left:auto;font-size:12px;color:var(--muted)}
+.mini{display:flex;gap:4px}
+.mini button,.link,.danger{border:0;border-radius:8px;padding:6px 9px;font-size:12px;font-weight:650;background:#e6ecf1;color:var(--ink)}
+.danger{background:#f7e1df;color:#9b2c24}
+.line{border-top:1px dashed #cfd8e0;padding-top:10px;margin-top:10px}
+.lfoot{display:flex;justify-content:space-between;align-items:center;margin-top:6px;font-size:12.5px;color:var(--muted)}
+.lfoot span{font-weight:700;color:var(--ink)}
+.link{margin:10px 0 12px;background:#dfe8ef}
+.btn{border:0;border-radius:10px;padding:13px;font-weight:750;font-size:14px}
+.btn.p{background:var(--ink);color:#fff}.btn.s{background:#e3eaf0;color:var(--ink)}.btn.w{width:100%}
+.help{font-size:12px;color:var(--muted);margin:4px 0 0}
+details summary{font-weight:700;color:var(--ink);cursor:pointer}
+.saved{display:flex;align-items:center;gap:8px;border-top:1px solid var(--line);padding:9px 0;font-size:13px}
+.saved:first-of-type{border-top:0}.saved .t{flex:1;min-width:0}.saved .t b{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bar{position:fixed;left:0;right:0;bottom:0;background:#fff;border-top:1px solid var(--line);padding:10px 12px calc(env(safe-area-inset-bottom,0px) + 10px);z-index:20}
+.bar .in{max-width:760px;margin:auto}
+.sum{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px;font-size:13px;color:var(--muted)}
+.sum b{font-size:19px;color:var(--ink)}
+.bb{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+#toast{position:fixed;left:50%;bottom:110px;transform:translateX(-50%);background:#1f3448;color:#fff;padding:10px 14px;border-radius:10px;font-size:13px;z-index:60;max-width:88%;text-align:center;display:none}
+#ov{position:fixed;inset:0;background:#dfe5ea;z-index:50;display:none;flex-direction:column}
+#ov .top{background:var(--ink);padding:calc(env(safe-area-inset-top,0px) + 8px) 10px 8px;display:flex;gap:8px;justify-content:space-between}
+#ov .top button{background:#ffffff22;color:#fff;border:0;border-radius:8px;padding:9px 12px;font-weight:700;font-size:13px}
+#ov .body{flex:1;overflow:auto;padding:10px}
+#wrap{background:#fff;box-shadow:0 2px 14px #0003;overflow:hidden;margin:auto}
+.pg{width:595px;min-height:842px;padding:40px;background:#fff;color:#222d36;font:9.5px/1.38 Helvetica,Arial,sans-serif;transform-origin:top left}
+.pg h1{font-size:26px;margin:0;color:#1f3448;line-height:1.05}
+.pg .st{color:#6b7885;font-size:10px;margin:2px 0 22px}
+.pg h3{font-size:11px;color:#1f3448;margin:20px 0 9px}
+.pg table{border-collapse:collapse;width:100%;table-layout:fixed}
+.pg td,.pg th{border:.6px solid #cfd8e0;padding:6px 8px;vertical-align:top;text-align:left}
+.pg th{background:#edf2f6;color:#1f3448;font-weight:700}
+.pg .it th{background:#1f3448;color:#fff;border-color:#fff}
+.pg .c{text-align:center}.pg .r{text-align:right}
+.pg .net td{background:#edf2f6;font-weight:700}
+.pg .tot td:first-child{font-weight:700;color:#1f3448}
+.pg .sisa td{background:#f6d6b9;font-weight:700;color:#1f3448}
+.pg .sisa td.r{font-size:17px}
+.pg .lbl{background:#edf2f6;font-weight:700;color:#1f3448}
+.pg p{margin:14px 0 0;font-size:10px;line-height:1.4}
+.pg .sig{margin:18px 0 0 4px;font-size:10px}
+.fname{font-size:12.5px;color:var(--muted);margin-top:8px;word-break:break-all}
+.status{font-size:13px;color:var(--ink);font-weight:650;margin-top:6px;min-height:0}
+.rv{border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin-bottom:10px;background:#fafcfd}
+.rv label.chk{display:flex;gap:10px;align-items:flex-start;margin:0;font-weight:600}
+.rv input[type=checkbox]{width:22px;height:22px;flex:none;margin-top:1px}
+.rv .rt{flex:1;min-width:0;font-size:13.5px;color:#25313b}.rv .rt small{display:block;color:var(--muted);font-weight:400;margin-top:2px}
+.rv .ra{text-align:right;font-weight:750;color:var(--ink);font-size:13.5px;white-space:nowrap}
+.rv.off{opacity:.45}
+.warn{color:#9a5b00;font-size:12px;margin-top:4px}
+.vbox{border-radius:10px;padding:10px 12px;margin:0 0 12px;font-size:13px}
+.vok{background:#e5f4ea;color:#1d5c34}.vbad{background:#fff1dc;color:#80500a}.vnone{background:#eef2f5;color:#51606d}
+pre{white-space:pre-wrap;font:11.5px/1.4 ui-monospace,Menlo,monospace;background:#f3f6f8;border:1px solid var(--line);border-radius:8px;padding:8px;max-height:260px;overflow:auto}
+details.manual{margin-top:6px}
+</style>
+</head>
+<body>
+<header><div class="row">
+  <div><h1>Invoice Offline</h1><small>Wahyu Interior Design · tanpa internet · langsung PDF</small></div>
+  <div class="hbtns">
+    <button type="button" id="bNew">Baru</button>
+    <button type="button" id="bSave">Simpan</button>
+    <button type="button" id="bBackup">Backup</button>
+    <button type="button" id="bImport">Impor</button>
+    <input type="file" id="fImport" accept=".json,application/json" hidden>
+  </div>
+</div></header>
+<main>
+<section class="card"><h2>1 · Ditagihkan kepada</h2>
+  <div class="field"><label>Nama instansi / klien *</label><input data-k="client" placeholder="Contoh: RS Stella Maris"></div>
+  <div class="field"><label>Contact person (CP)</label><input data-k="contact" placeholder="Contoh: Ibu Dessy"></div>
+</section>
+<section class="card"><h2>2 · Informasi invoice</h2>
+  <div class="g2">
+    <div class="field"><label>Tanggal invoice *</label><input type="date" data-k="date"></div>
+    <div class="field"><label>Kota pada penutup</label><input data-k="city" placeholder="Makassar"></div>
+  </div>
+  <div class="field"><label>Keperluan / deskripsi tagihan *</label><input data-k="purpose" placeholder="Pelunasan pekerjaan mebel"></div>
+  <div class="field"><label>Catatan tambahan (opsional)</label><textarea data-k="extra" placeholder="Misalnya nomor PO, lokasi proyek, atau catatan khusus."></textarea></div>
+</section>
+<section class="card"><h2>3 · Rincian harga pekerjaan</h2>
+  <div class="field filebox"><label>Upload proposal penawaran harga yang telah disetujui *</label>
+    <input type="file" id="fProposal" accept=".pdf,.png,.jpg,.jpeg,.webp,image/*,application/pdf" hidden>
+    <button type="button" class="btn p w" id="bPick">Pilih file proposal (PDF / JPG / PNG)</button>
+    <button type="button" class="link" id="bSavedProp" style="width:100%;margin:8px 0 0">Atau ambil dari proposal tersimpan di app Proposal</button>
+    <div id="propPick"></div>
+    <div class="fname" id="fName">Belum ada file dipilih.</div>
+    <div class="status" id="rStatus"></div>
+    <p class="help">Item, volume, harga satuan, dan diskon dibaca otomatis dari file ini, tanpa diketik. Semua proses di HP, tanpa internet.</p>
+  </div>
+  <div id="verify"></div>
+  <div id="review"></div>
+  <details id="rawBox" style="margin:8px 0 12px"><summary>Lihat teks yang terbaca dari file</summary><pre id="rawText"></pre></details>
+  <div class="field"><label>Jumlah yang telah dibayarkan / panjar (opsional)</label><input data-k="panjar" data-money inputmode="numeric" placeholder="Contoh: Rp4.250.000"></div>
+  <div class="field"><label>Diskon total pekerjaan (Rp, opsional)</label><input data-k="discountTotal" data-money inputmode="numeric" placeholder="Hanya jika diskon berlaku atas seluruh pekerjaan"></div>
+  <details class="manual"><summary>Koreksi / tambah item pekerjaan secara manual</summary>
+    <div id="items" style="margin-top:12px"></div>
+    <button type="button" class="btn s w" id="addItem">+ Tambah item pekerjaan</button>
+  </details>
+</section>
+<section class="card"><h2>4 · Informasi transfer</h2>
+  <p class="help" style="margin:-6px 0 12px">Data rekening sudah terisi otomatis dan tetap bisa diedit.</p>
+  <div class="g2">
+    <div class="field"><label>Nama bank *</label><input data-k="bank"></div>
+    <div class="field"><label>Nomor rekening *</label><input data-k="account"></div>
+  </div>
+  <div class="field"><label>Atas nama *</label><input data-k="holder"></div>
+</section>
+<section class="card"><details><summary>Pengaturan lanjutan (subjudul, penutup, penandatangan, no. invoice)</summary>
+  <div class="field" style="margin-top:12px"><label>No. invoice (opsional)</label><input data-k="invNo" placeholder="Kosongkan jika tidak dipakai"></div>
+  <div class="field"><label>Subjudul</label><input data-k="subtitle"></div>
+  <div class="field"><label>Kalimat penutup</label><textarea data-k="closing"></textarea></div>
+  <div class="g2">
+    <div class="field"><label>Nama penandatangan</label><input data-k="signer"></div>
+    <div class="field"><label>Nama usaha</label><input data-k="business"></div>
+  </div>
+</details></section>
+<section class="card"><h2>Invoice tersimpan</h2><div id="saved"></div>
+  <p class="help">Data tersimpan hanya di HP ini. Gunakan <b>Backup</b> untuk memindahkan ke perangkat lain.</p></section>
+</main>
+<div class="bar"><div class="in">
+  <div class="sum"><span>Sisa pembayaran</span><b id="sisa">Rp0</b></div>
+  <div class="bb">
+    <button type="button" class="btn s" id="bPrev">Pratinjau</button>
+    <button type="button" class="btn p" id="bPdf">Simpan PDF</button>
+    <button type="button" class="btn p" id="bShare">Bagikan</button>
+  </div>
+</div></div>
+<div id="ov"><div class="top"><button id="oClose">← Tutup</button><div style="display:flex;gap:8px"><button id="oPdf">Simpan PDF</button><button id="oShare">Bagikan</button></div></div>
+  <div class="body"><div id="wrap"><div class="pg" id="pg"></div></div></div></div>
+<div id="toast"></div>
+<script src="vendor/jspdf.umd.min.js"></script>
+<script src="vendor/pdf.min.js"></script>
+<script src="vendor/tesseract/tesseract.min.js"></script>
+<script src="parser.js"></script>
+<script src="extract.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
