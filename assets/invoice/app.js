@@ -527,11 +527,39 @@ function saveCurrent() {
   if (idx >= 0) list[idx] = rec; else list.unshift(rec);
   lsSet(LS_SAVED, list); saveDraft(); renderSaved(); toast('Invoice disimpan di HP ini.');
 }
+function restoreInvoiceFormInteractivity() {
+  // Pulihkan status kontrol formulir secara eksplisit setelah membuat invoice baru.
+  // Ini juga membersihkan status terkunci yang mungkin tertinggal dari sesi/overlay sebelumnya.
+  var controls = document.querySelectorAll('main input, main textarea, main select');
+  controls.forEach(function (el) {
+    el.disabled = false;
+    el.readOnly = false;
+    el.removeAttribute('disabled');
+    el.removeAttribute('readonly');
+    el.style.pointerEvents = 'auto';
+  });
+  var main = $('main');
+  if (main) { main.inert = false; main.style.pointerEvents = 'auto'; }
+  document.querySelectorAll('main .card, main .field').forEach(function (el) {
+    el.inert = false;
+    el.style.pointerEvents = 'auto';
+  });
+  // Tutup paksa lapisan pratinjau bila status tampilnya tertinggal.
+  var overlay = $('#ov');
+  if (overlay) { overlay.style.display = 'none'; overlay.setAttribute('aria-hidden', 'true'); }
+}
 function newInvoice() {
   if (!confirm('Mulai invoice baru? Data rekening dan penandatangan tetap dipertahankan.')) return;
   var keep = { bank: S.bank, account: S.account, holder: S.holder, closing: S.closing, signer: S.signer, business: S.business, city: S.city, subtitle: S.subtitle };
-  S = Object.assign(defaults(), keep); dpHint = 0; $('#fName').textContent = 'Belum ada file dipilih.'; setStatus(''); $('#rawText').textContent = ''; saveDraft(); refreshStatic(); renderItems();
+  S = Object.assign(defaults(), keep); dpHint = 0;
+  $('#fName').textContent = 'Belum ada file dipilih.'; setStatus(''); $('#rawText').textContent = '';
+  saveDraft(); refreshStatic(); renderItems(); restoreInvoiceFormInteractivity();
   window.scrollTo(0, 0);
+  // Kembalikan fokus ke kolom pertama agar pengguna langsung dapat mengetik.
+  requestAnimationFrame(function () {
+    var first = document.querySelector('main input[data-k="client"]');
+    if (first) first.focus();
+  });
 }
 async function doBackup() {
   var payload = JSON.stringify({ app: 'invoice-offline', version: 1, saved: lsGet(LS_SAVED, []), current: S }, null, 1);
